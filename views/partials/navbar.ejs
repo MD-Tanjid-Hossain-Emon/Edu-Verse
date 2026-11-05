@@ -1,0 +1,41 @@
+<header class="navbar">
+  <div class="container">
+    <a href="/" class="brand">
+      <img class="brand-logo" src="/images/eduverse-emblem.png" alt="">
+      <span>
+        EduVerse
+        <span class="brand-tagline">A universe of learning</span>
+      </span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="/courses" class="nav-link <%= currentPath && currentPath.startsWith('/courses') ? 'active' : '' %>">Courses</a>
+      <% if (currentUser) { %>
+        <a href="/<%= currentUser.role %>/dashboard" class="nav-link <%= currentPath && currentPath.includes('/dashboard') ? 'active' : '' %>">Dashboard</a>
+      <% } %>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false">
+        <span data-theme-icon aria-hidden="true">☀</span>
+        <span data-theme-label>Light</span>
+      </button>
+      <% if (currentUser) { %>
+        <div class="user-chip">
+          <% const roleColors = { admin: '#F5A623', instructor: '#5B6EF5', student: '#1FCBA6' }; %>
+          <span class="avatar" style="background: <%= roleColors[currentUser.role] || '#F5A623' %>;"><%= currentUser.name.charAt(0).toUpperCase() %></span>
+          <span><%= currentUser.name %></span>
+          <span class="badge badge-muted" style="margin-left:2px;"><%= currentUser.role %></span>
+        </div>
+        <a href="/account" class="btn btn-ghost btn-sm">Account</a>
+        <form method="POST" action="/logout" style="margin:0;">
+          <%- include('csrf-field') %>
+          <button type="submit" class="btn btn-ghost btn-sm">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="btn btn-ghost btn-sm">Log in</a>
+        <a href="/register" class="btn btn-primary btn-sm">Get started</a>
+      <% } %>
+    </div>
+  </div>
+</header>

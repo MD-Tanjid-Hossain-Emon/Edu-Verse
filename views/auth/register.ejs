@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="card card-pad">
+        <h2>Create your account</h2>
+        <p class="text-muted" style="margin-bottom:22px;">Join EduVerse as a student or an instructor.</p>
+
+        <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+        <form method="POST" action="/register">
+          <%- include('../partials/csrf-field') %>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" required value="<%= old.name || '' %>" autofocus>
+          </div>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" required value="<%= old.email || '' %>">
+          </div>
+          <div class="field">
+            <label>I am joining as a</label>
+            <div class="radio-row">
+              <label class="radio-card">
+                <input type="radio" name="role" value="student" <%= (old.role || 'student') === 'student' ? 'checked' : '' %>>
+                <strong>Student</strong>
+                <div class="text-faint" style="font-size:0.78rem;">Enroll and learn</div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="role" value="instructor" <%= old.role === 'instructor' ? 'checked' : '' %>>
+                <strong>Instructor</strong>
+                <div class="text-faint" style="font-size:0.78rem;">Create courses</div>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required minlength="10" autocomplete="new-password">
+            <div class="hint">10-128 characters.</div>
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required minlength="10" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        </form>
+
+        <p style="margin-top:20px;text-align:center;font-size:0.88rem;">
+          Already have an account? <a href="/login" style="color:var(--gold);font-weight:600;">Log in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/instructor-sidebar') %>
+
+    <div class="dash-main">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 style="font-size:1.7rem;margin-bottom:2px;">My courses</h1>
+          <p class="text-muted">Create and manage the courses you teach.</p>
+        </div>
+        <a href="/instructor/courses/new" class="btn btn-primary">New course</a>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-card">
+          <div class="stat-num mono"><%= courses.length %></div>
+          <div class="stat-label">Total courses</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num mono" style="color:var(--teal);"><%= totalStudents %></div>
+          <div class="stat-label">Students taught</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num mono" style="color:var(--gold);"><%= pendingSubmissions %></div>
+          <div class="stat-label">Ungraded submissions</div>
+        </div>
+      </div>
+
+      <% if (courses.length === 0) { %>
+        <div class="empty-state card">
+          <h3>You haven't created a course yet</h3>
+          <p>Start by creating your first course, then add lessons, a quiz, and assignments.</p>
+          <a href="/instructor/courses/new" class="btn btn-primary" style="margin-top:10px;">Create a course</a>
+        </div>
+      <% } else { %>
+        <div class="grid grid-2">
+          <% courses.forEach(c => { %>
+            <a href="/instructor/courses/<%= c.id %>" class="card course-card">
+              <div class="course-cover" style="background: linear-gradient(135deg, <%= c.cover_color %>, #0A0F24);">
+                <span class="badge <%= c.status === 'published' ? 'badge-teal' : (c.status === 'pending' ? 'badge-gold' : 'badge-coral') %>"><%= c.status %></span>
+              </div>
+              <div class="course-card-body">
+                <div class="course-card-title"><%= c.title %></div>
+                <div class="course-meta">
+                  <span><%= c.lesson_count %> lessons</span>
+                  <span>&middot;</span>
+                  <span><%= c.enrolled_count %> enrolled</span>
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

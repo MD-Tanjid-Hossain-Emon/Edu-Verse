@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/admin-sidebar') %>
+
+    <div class="dash-main">
+      <h1 style="font-size:1.7rem;">Manage courses</h1>
+      <p class="text-muted">Approve, reject, or remove courses submitted by instructors.</p>
+
+      <div class="flex gap-8 mb-24">
+        <a href="/admin/courses" class="btn <%= statusFilter === '' ? 'btn-primary' : 'btn-secondary' %> btn-sm">All</a>
+        <a href="/admin/courses?status=pending" class="btn <%= statusFilter === 'pending' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Pending</a>
+        <a href="/admin/courses?status=published" class="btn <%= statusFilter === 'published' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Published</a>
+        <a href="/admin/courses?status=rejected" class="btn <%= statusFilter === 'rejected' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Rejected</a>
+      </div>
+
+      <div class="card card-pad">
+        <table>
+          <thead><tr><th>Title</th><th>Instructor</th><th>Status</th><th>Enrolled</th><th></th></tr></thead>
+          <tbody>
+            <% courses.forEach(c => { %>
+              <tr>
+                <td><%= c.title %></td>
+                <td><%= c.instructor_name %></td>
+                <td><span class="badge <%= c.status === 'published' ? 'badge-teal' : (c.status === 'pending' ? 'badge-gold' : 'badge-coral') %>"><%= c.status %></span></td>
+                <td><%= c.enrolled_count %></td>
+                <td>
+                  <div class="flex gap-8">
+                    <% if (c.status !== 'published') { %>
+                      <form method="POST" action="/admin/courses/<%= c.id %>/approve"><%- include('../partials/csrf-field') %><button class="btn btn-primary btn-sm">Approve</button></form>
+                    <% } %>
+                    <% if (c.status !== 'rejected') { %>
+                      <form method="POST" action="/admin/courses/<%= c.id %>/reject"><%- include('../partials/csrf-field') %><button class="btn btn-secondary btn-sm">Reject</button></form>
+                    <% } %>
+                    <form method="POST" action="/admin/courses/<%= c.id %>/delete" onsubmit="return confirm('Delete this course permanently?');">
+                      <%- include('../partials/csrf-field') %>
+                      <button class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

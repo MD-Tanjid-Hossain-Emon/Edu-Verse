@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head') %></head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <section class="hero">
+    <div class="hero-orbit"></div>
+    <div class="container">
+      <div class="hero-eyebrow">Learning management platform</div>
+      <h1>A universe of learning opportunities, all in one orbit.</h1>
+      <p class="lead">EduVerse brings course enrollment, video lectures, quizzes, assignments, and certificates
+        together in a single platform built for students, instructors, and administrators alike.</p>
+      <div class="hero-actions">
+        <a href="/register" class="btn btn-primary">Start learning free</a>
+        <a href="/courses" class="btn btn-secondary">Browse courses</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="stat-grid">
+        <div class="card stat-card">
+          <div class="stat-num mono"><%= stats.courses %></div>
+          <div class="stat-label">Published courses</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num mono"><%= stats.students %></div>
+          <div class="stat-label">Students learning</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num mono"><%= stats.instructors %></div>
+          <div class="stat-label">Active instructors</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-num mono">99%</div>
+          <div class="stat-label">Target uptime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="flex items-center justify-between mb-24">
+        <h2 style="margin:0;">Featured courses</h2>
+        <a href="/courses" class="btn btn-outline btn-sm">View all courses</a>
+      </div>
+
+      <% if (featured.length === 0) { %>
+        <div class="empty-state card">
+          <h3>No courses published yet</h3>
+          <p>Check back soon — instructors are building the catalog.</p>
+        </div>
+      <% } else { %>
+        <div class="grid grid-3">
+          <% featured.forEach(course => { %>
+            <a href="/courses/<%= course.id %>" class="card course-card">
+              <div class="course-cover" style="background: linear-gradient(135deg, <%= course.cover_color %>, #0A0F24);">
+                <span class="badge badge-gold"><%= course.category %></span>
+              </div>
+              <div class="course-card-body">
+                <div class="course-card-title"><%= course.title %></div>
+                <div class="course-meta">
+                  <span><%= course.lesson_count %> lessons</span>
+                  <span>&middot;</span>
+                  <span><%= course.level %></span>
+                </div>
+                <div class="course-card-footer">
+                  <span class="text-faint" style="font-size:0.82rem;">by <%= course.instructor_name %></span>
+                  <span class="badge badge-teal"><%= course.enrolled_count %> enrolled</span>
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="grid grid-3">
+        <div class="card card-pad">
+          <span class="badge badge-indigo mb-24" style="display:inline-flex;">For students</span>
+          <h3>Learn at your own orbit</h3>
+          <p>Enroll in courses, stream video lectures, submit assignments, take quizzes, and track your
+            progress toward a certificate.</p>
+        </div>
+        <div class="card card-pad">
+          <span class="badge badge-gold mb-24" style="display:inline-flex;">For instructors</span>
+          <h3>Build and manage courses</h3>
+          <p>Create lessons, quizzes, and assignments, then review submissions and monitor how your
+            students are progressing.</p>
+        </div>
+        <div class="card card-pad">
+          <span class="badge badge-teal mb-24" style="display:inline-flex;">For administrators</span>
+          <h3>Oversee the platform</h3>
+          <p>Approve new courses, manage user accounts, and keep an eye on platform-wide activity from one
+            dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title %> · EduVerse</title>
+<meta name="description" content="EduVerse — a universe of learning opportunities. Enroll in courses, stream lectures, take quizzes, submit assignments, and earn certificates.">
+<link rel="icon" type="image/png" href="/images/eduverse-emblem.png">
+<script>
+  (() => {
+    let theme;
+    try {
+      theme = localStorage.getItem('eduverse-theme');
+    } catch (error) {
+      theme = null;
+    }
+    if (theme !== 'light' && theme !== 'dark') {
+      theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    document.documentElement.dataset.theme = theme;
+  })();
+</script>
+<link rel="stylesheet" href="/css/style.css">
+<script src="/js/theme.js" defer></script>

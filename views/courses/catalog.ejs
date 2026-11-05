@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container" style="padding-top:40px;">
+    <h1 style="font-size:2rem;">Course catalog</h1>
+    <p class="text-muted" style="max-width:560px;">Browse published courses across every category. Enroll instantly with a student account.</p>
+
+    <form method="GET" action="/courses" class="flex gap-12" style="margin:24px 0 32px;flex-wrap:wrap;">
+      <input type="text" name="q" placeholder="Search courses…" value="<%= q %>" style="max-width:280px;">
+      <select name="category" style="max-width:220px;">
+        <option value="">All categories</option>
+        <% categories.forEach(c => { %>
+          <option value="<%= c %>" <%= category === c ? 'selected' : '' %>><%= c %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="btn btn-secondary">Filter</button>
+      <% if (q || category) { %><a href="/courses" class="btn btn-ghost">Clear</a><% } %>
+    </form>
+  </div>
+
+  <div class="container" style="padding-bottom:80px;">
+    <% if (courses.length === 0) { %>
+      <div class="empty-state card">
+        <h3>No courses match your search</h3>
+        <p>Try a different keyword or clear the filters.</p>
+      </div>
+    <% } else { %>
+      <div class="grid grid-3">
+        <% courses.forEach(course => { %>
+          <a href="/courses/<%= course.id %>" class="card course-card">
+            <div class="course-cover" style="background: linear-gradient(135deg, <%= course.cover_color %>, #0A0F24);">
+              <span class="badge badge-gold"><%= course.category %></span>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-title"><%= course.title %></div>
+              <div class="course-meta">
+                <span><%= course.lesson_count %> lessons</span>
+                <span>&middot;</span>
+                <span><%= course.level %></span>
+              </div>
+              <div class="course-card-footer">
+                <span class="text-faint" style="font-size:0.82rem;">by <%= course.instructor_name %></span>
+                <span class="badge badge-teal"><%= course.enrolled_count %> enrolled</span>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

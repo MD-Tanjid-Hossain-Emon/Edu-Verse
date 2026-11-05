@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/instructor-sidebar') %>
+
+    <div class="dash-main">
+      <a href="/instructor/dashboard" class="text-faint" style="font-size:0.85rem;">&larr; Back to my courses</a>
+
+      <div class="flex justify-between items-center" style="margin-top:10px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 style="font-size:1.6rem;margin-bottom:4px;"><%= course.title %></h1>
+          <span class="badge <%= course.status === 'published' ? 'badge-teal' : (course.status === 'pending' ? 'badge-gold' : 'badge-coral') %>"><%= course.status %></span>
+        </div>
+        <div class="flex gap-8">
+          <a href="/instructor/courses/<%= course.id %>/edit" class="btn btn-secondary btn-sm">Edit details</a>
+          <% if (course.status === 'published') { %>
+            <form method="POST" action="/instructor/courses/<%= course.id %>/unpublish"><%- include('../partials/csrf-field') %><button class="btn btn-secondary btn-sm">Unpublish</button></form>
+          <% } else { %>
+            <form method="POST" action="/instructor/courses/<%= course.id %>/publish"><%- include('../partials/csrf-field') %><button class="btn btn-primary btn-sm">Publish course</button></form>
+          <% } %>
+          <form method="POST" action="/instructor/courses/<%= course.id %>/delete" onsubmit="return confirm('Delete this course permanently? This cannot be undone.');">
+            <%- include('../partials/csrf-field') %>
+            <button class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="stat-grid" style="margin-top:24px;">
+        <div class="card stat-card"><div class="stat-num mono"><%= lessons.length %></div><div class="stat-label">Lessons</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= students.length %></div><div class="stat-label">Enrolled students</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= assignments.length %></div><div class="stat-label">Assignments</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= submissions.filter(s => s.grade === null).length %></div><div class="stat-label">To grade</div></div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="card stat-card"><div class="stat-num mono"><%= analytics.completionRate %>%</div><div class="stat-label">Course completion rate</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= analytics.averageQuizScore === null ? '—' : `${analytics.averageQuizScore}%` %></div><div class="stat-label">Average quiz score</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= analytics.quizAttempts %></div><div class="stat-label">Quiz attempts</div></div>
+      </div>
+
+      <!-- Lessons -->
+      <div class="card card-pad mb-24">
+        <h3>Lessons</h3>
+        <% lessons.forEach((l, i) => { %>
+          <div class="lesson-row">
+            <div class="lesson-check mono"><%= i + 1 %></div>
+            <div style="flex:1;">
+              <div style="font-weight:600;"><%= l.title %></div>
+              <% if (l.video_url) { %><div class="text-faint" style="font-size:0.8rem;"><%= l.video_url %></div><% } %>
+            </div>
+            <form method="POST" action="/instructor/lessons/<%= l.id %>/delete" onsubmit="return confirm('Remove this lesson?');">
+              <%- include('../partials/csrf-field') %>
+              <button class="btn btn-ghost btn-sm">Remove</button>
+            </form>
+          </div>
+        <% }) %>
+        <% if (lessons.length === 0) { %><p class="text-faint">No lessons added yet.</p><% } %>
+
+        <form method="POST" action="/instructor/courses/<%= course.id %>/lessons" enctype="multipart/form-data" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border-soft);">
+          <%- include('../partials/csrf-field') %>
+          <div class="grid grid-2">
+            <div class="field"><label>Lesson title</label><input type="text" name="title" required></div>
+            <div class="field"><label>YouTube embed URL (optional)</label><input type="url" name="video_url" placeholder="https://www.youtube.com/embed/…"></div>
+          </div>
+          <div class="field"><label>Or upload MP4 (maximum 500 MB)</label><input type="file" name="video" accept="video/mp4,.mp4"></div>
+          <div class="field"><label>Notes (optional)</label><textarea name="content" placeholder="Short summary shown to students"></textarea></div>
+          <button type="submit" class="btn btn-secondary">Add lesson</button>
+        </form>
+      </div>
+
+      <!-- Quiz -->
+      <div class="card card-pad mb-24">
+        <h3>Quiz</h3>
+        <% if (!quiz) { %>
+          <form method="POST" action="/instructor/courses/<%= course.id %>/quiz" class="flex gap-8">
+            <%- include('../partials/csrf-field') %>
+            <input type="text" name="quiz_title" placeholder="Quiz title" style="flex:1;" required>
+            <button type="submit" class="btn btn-secondary">Create quiz</button>
+          </form>
+        <% } else { %>
+          <p class="text-muted"><%= quiz.title %></p>
+          <% questions.forEach((q, i) => { %>
+            <div class="lesson-row" style="align-items:flex-start;">
+              <div class="lesson-check mono"><%= i + 1 %></div>
+              <div style="flex:1;">
+                <div style="font-weight:600;"><%= q.question %></div>
+                <div class="text-faint" style="font-size:0.82rem;">
+                  a) <%= q.option_a %> &nbsp; b) <%= q.option_b %> &nbsp; c) <%= q.option_c %> &nbsp; d) <%= q.option_d %>
+                  &nbsp;—&nbsp; correct: <strong><%= q.correct_option %></strong>
+                </div>
+              </div>
+              <form method="POST" action="/instructor/questions/<%= q.id %>/delete" onsubmit="return confirm('Remove this question?');">
+                <%- include('../partials/csrf-field') %>
+                <button class="btn btn-ghost btn-sm">Remove</button>
+              </form>
+            </div>
+          <% }) %>
+
+          <form method="POST" action="/instructor/quizzes/<%= quiz.id %>/questions" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border-soft);">
+            <%- include('../partials/csrf-field') %>
+            <div class="field"><label>Question</label><input type="text" name="question" required></div>
+            <div class="grid grid-2">
+              <div class="field"><label>Option A</label><input type="text" name="option_a" required></div>
+              <div class="field"><label>Option B</label><input type="text" name="option_b" required></div>
+              <div class="field"><label>Option C</label><input type="text" name="option_c" required></div>
+              <div class="field"><label>Option D</label><input type="text" name="option_d" required></div>
+            </div>
+            <div class="field" style="max-width:200px;">
+              <label>Correct option</label>
+              <select name="correct_option">
+                <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-secondary">Add question</button>
+          </form>
+        <% } %>
+      </div>
+
+      <!-- Assignments -->
+      <div class="card card-pad mb-24">
+        <h3>Assignments</h3>
+        <% assignments.forEach(a => { %>
+          <div class="lesson-row">
+            <div style="flex:1;">
+              <div style="font-weight:600;"><%= a.title %></div>
+              <% if (a.instructions) { %><div class="text-faint" style="font-size:0.82rem;"><%= a.instructions %></div><% } %>
+            </div>
+            <form method="POST" action="/instructor/assignments/<%= a.id %>/delete" onsubmit="return confirm('Remove this assignment?');">
+              <%- include('../partials/csrf-field') %>
+              <button class="btn btn-ghost btn-sm">Remove</button>
+            </form>
+          </div>
+        <% }) %>
+        <% if (assignments.length === 0) { %><p class="text-faint">No assignments added yet.</p><% } %>
+
+        <form method="POST" action="/instructor/courses/<%= course.id %>/assignments" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border-soft);">
+          <%- include('../partials/csrf-field') %>
+          <div class="field"><label>Title</label><input type="text" name="title" required></div>
+          <div class="field"><label>Instructions</label><textarea name="instructions"></textarea></div>
+          <div class="field" style="max-width:220px;"><label>Due date (optional)</label><input type="date" name="due_date"></div>
+          <button type="submit" class="btn btn-secondary">Add assignment</button>
+        </form>
+      </div>
+
+      <!-- Submissions to grade -->
+      <% if (submissions.length > 0) { %>
+        <div class="card card-pad mb-24">
+          <h3>Submissions</h3>
+          <table>
+            <thead><tr><th>Student</th><th>Assignment</th><th>File</th><th>Grade</th><th></th></tr></thead>
+            <tbody>
+              <% submissions.forEach(s => { %>
+                <tr>
+                  <td><%= s.student_name %></td>
+                  <td><%= s.assignment_title %></td>
+                  <td><a href="/instructor/submissions/<%= s.id %>/download" class="btn btn-ghost btn-sm">Download</a></td>
+                  <td><%= s.grade !== null ? `${s.grade}/100` : 'Ungraded' %></td>
+                  <td>
+                    <form method="POST" action="/instructor/submissions/<%= s.id %>/grade" class="flex gap-8">
+                      <%- include('../partials/csrf-field') %>
+                      <input type="number" name="grade" min="0" max="100" placeholder="0-100" style="width:80px;" value="<%= s.grade !== null ? s.grade : '' %>">
+                      <input type="text" name="feedback" placeholder="Feedback" style="width:160px;" value="<%= s.feedback || '' %>">
+                      <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+
+      <!-- Enrolled students -->
+      <div class="card card-pad">
+        <h3>Enrolled students</h3>
+        <% if (students.length === 0) { %>
+          <p class="text-faint">No students enrolled yet.</p>
+        <% } else { %>
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Enrolled</th><th>Certificate</th></tr></thead>
+            <tbody>
+              <% students.forEach(s => { %>
+                <tr>
+                  <td><%= s.name %></td>
+                  <td class="mono" style="font-size:0.82rem;"><%= s.email %></td>
+                  <td class="text-faint"><%= s.enrolled_at %></td>
+                  <td><%- s.certificate_issued ? '<span class="badge badge-teal">Issued</span>' : '—' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

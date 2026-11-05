@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/student-sidebar') %>
+
+    <div class="dash-main">
+      <a href="/student/dashboard" class="text-faint" style="font-size:0.85rem;">&larr; Back to my learning</a>
+      <h1 style="font-size:1.7rem;margin-top:10px;"><%= course.title %></h1>
+      <p class="text-muted">by <%= course.instructor_name %></p>
+
+      <div class="card card-pad mb-24">
+        <div class="flex justify-between items-center" style="margin-bottom:10px;">
+          <strong>Your progress</strong>
+          <span class="mono"><%= progress %>%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:<%= progress %>%;"></div></div>
+        <% if (progress === 100) { %>
+          <a href="/student/certificate/<%= course.id %>" class="btn btn-primary" style="margin-top:16px;">Download certificate</a>
+        <% } else { %>
+          <p class="text-faint" style="margin-top:14px;margin-bottom:0;font-size:0.85rem;">Complete every lesson to unlock your certificate.</p>
+        <% } %>
+      </div>
+
+      <div class="card card-pad mb-24">
+        <h3>Lessons</h3>
+        <% if (lessons.length === 0) { %>
+          <p class="text-faint">No lessons published yet.</p>
+        <% } %>
+        <% lessons.forEach((l, i) => {
+          const done = completedIds.has(l.id);
+          const isYouTubeVideo = l.video_url && l.video_url.includes('youtube.com/embed/');
+          const requiresVideoEnd = l.video_url && (
+            l.video_url.startsWith('local:') || l.video_url.startsWith('upload:') || isYouTubeVideo
+          );
+          const hasQuestionBank = l.quiz && l.quiz.question_count >= 20;
+          const quizAvailable = hasQuestionBank && (!requiresVideoEnd || watchedIds.has(l.id) || done);
+          const lastScore = l.quiz && l.quiz.last_score;
+          const passedQuiz = l.quiz && lastScore !== null && lastScore !== undefined &&
+            lastScore * 100 >= l.quiz.last_total * 40;
+        %>
+          <div class="lesson-row">
+            <div class="lesson-check <%= done ? 'done' : '' %> mono"><%- done ? '&check;' : i + 1 %></div>
+            <div style="flex:1;">
+              <div style="font-weight:600;"><%= l.title %></div>
+              <% if (l.content) { %><div class="text-faint" style="font-size:0.85rem;"><%= l.content %></div><% } %>
+              <% if (l.quiz) { %>
+                <% if (quizAvailable) { %>
+                  <% if (passedQuiz) { %>
+                    <span class="badge badge-teal" style="margin-top:8px;">Passed · <%= lastScore %>/<%= l.quiz.last_total %></span>
+                  <% } else { %>
+                    <a href="/student/quizzes/<%= l.quiz.id %>" class="btn btn-secondary btn-sm" style="margin-top:8px;">
+                      <%= lastScore !== null && lastScore !== undefined ? 'Retake quiz' : 'Quiz for this lesson' %>
+                    </a>
+                  <% } %>
+                  <% if (lastScore !== null && lastScore !== undefined) { %>
+                    <div class="text-faint" style="font-size:0.8rem;margin-top:5px;">
+                      Last score: <%= lastScore %>/<%= l.quiz.last_total %> · 40% required to pass
+                    </div>
+                  <% } %>
+                <% } else if (!hasQuestionBank) { %>
+                  <span class="badge badge-indigo" style="margin-top:8px;">Quiz for this lesson · 20 topic-based sample questions pending</span>
+                <% } else { %>
+                  <div class="text-faint" style="font-size:0.8rem;margin-top:6px;">The quiz unlocks when the video finishes.</div>
+                <% } %>
+              <% } %>
+            </div>
+            <% if (done) { %>
+              <span class="badge badge-teal"><%= passedQuiz ? 'Passed quiz' : 'Completed' %></span>
+            <% } %>
+          </div>
+          <% if (l.video_url && (l.video_url.startsWith('local:') || l.video_url.startsWith('upload:'))) { %>
+            <div class="video-embed" style="max-width:640px;">
+              <video controls preload="metadata" playsinline data-lesson-video="<%= l.id %>">
+                <source src="/student/lessons/<%= l.id %>/video" type="video/mp4">
+                Your browser does not support HTML video.
+              </video>
+            </div>
+          <% } else if (l.video_url) { %>
+            <div class="video-embed" style="max-width:640px;">
+              <iframe
+                <% if (isYouTubeVideo) { %>data-youtube-lesson="<%= l.id %>"<% } %>
+                src="<%= l.video_url %>" title="<%= l.title %>" allowfullscreen loading="lazy"></iframe>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+
+      <% if (quiz) { %>
+        <div class="card card-pad mb-24">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 style="margin-bottom:4px;"><%= quiz.title %></h3>
+              <p class="text-faint" style="margin:0;">Test what you've learned so far.</p>
+            </div>
+            <a href="/student/quizzes/<%= quiz.id %>" class="btn btn-secondary btn-sm"><%= quizAttempt ? 'Retake quiz' : 'Take quiz' %></a>
+          </div>
+          <% if (quizAttempt) { %>
+            <div class="alert alert-info" style="margin-top:16px;margin-bottom:0;">
+              Last score: <strong><%= quizAttempt.score %> / <%= quizAttempt.total %></strong>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+
+      <% if (assignments.length > 0) { %>
+        <div class="card card-pad mb-24">
+          <h3>Assignments</h3>
+          <% assignments.forEach(a => { const sub = submissionByAssignment[a.id]; %>
+            <div class="lesson-row" style="align-items:flex-start;flex-direction:column;gap:10px;">
+              <div class="flex justify-between items-center" style="width:100%;">
+                <div>
+                  <div style="font-weight:600;"><%= a.title %></div>
+                  <% if (a.instructions) { %><div class="text-faint" style="font-size:0.85rem;"><%= a.instructions %></div><% } %>
+                  <% if (a.due_date) { %><div class="text-faint" style="font-size:0.78rem;margin-top:4px;">Due <%= a.due_date %></div><% } %>
+                </div>
+                <% if (sub) { %>
+                  <span class="badge <%= sub.grade !== null ? 'badge-teal' : 'badge-indigo' %>">
+                    <%= sub.grade !== null ? `Graded: ${sub.grade}/100` : 'Submitted' %>
+                  </span>
+                <% } %>
+              </div>
+              <form method="POST" action="/student/assignments/<%= a.id %>/submit" enctype="multipart/form-data" class="flex gap-8" style="width:100%;">
+                <input type="file" name="file" required style="flex:1;">
+                <button type="submit" class="btn btn-secondary btn-sm"><%= sub ? 'Resubmit' : 'Submit' %></button>
+              </form>
+              <% if (sub && sub.feedback) { %>
+                <div class="text-faint" style="font-size:0.85rem;">Feedback: <%= sub.feedback %></div>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    const lessonCsrfToken = '<%= csrfToken %>';
+    async function recordLessonWatch(lessonId) {
+      const response = await fetch(`/student/lessons/${lessonId}/watched`, {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': lessonCsrfToken },
+      });
+      if (!response.ok) throw new Error('Could not unlock the lesson quiz.');
+      window.location.reload();
+    }
+
+    document.querySelectorAll('[data-lesson-video]').forEach((video) => {
+      video.addEventListener('ended', () => {
+        recordLessonWatch(video.dataset.lessonVideo).catch((error) => console.error(error));
+      }, { once: true });
+    });
+
+    const youtubeFrames = [...document.querySelectorAll('iframe[data-youtube-lesson]')];
+    if (youtubeFrames.length) {
+      window.onYouTubeIframeAPIReady = () => {
+        youtubeFrames.forEach((frame) => {
+          const url = new URL(frame.src);
+          url.searchParams.set('enablejsapi', '1');
+          url.searchParams.set('origin', window.location.origin);
+          frame.src = url.toString();
+          new YT.Player(frame, {
+            events: {
+              onStateChange(event) {
+                if (event.data === YT.PlayerState.ENDED) {
+                  recordLessonWatch(frame.dataset.youtubeLesson).catch((error) => console.error(error));
+                }
+              },
+            },
+          });
+        });
+      };
+      const youtubeApi = document.createElement('script');
+      youtubeApi.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(youtubeApi);
+    }
+  </script>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

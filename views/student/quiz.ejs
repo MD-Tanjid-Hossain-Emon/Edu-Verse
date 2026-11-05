@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/student-sidebar') %>
+
+    <div class="dash-main" style="max-width:720px;">
+      <a href="/student/courses/<%= quiz.course_id %>" class="text-faint" style="font-size:0.85rem;">&larr; Back to course</a>
+      <h1 style="font-size:1.6rem;margin-top:10px;"><%= quiz.title %></h1>
+      <% if (quiz.lesson_id) { %>
+        <p class="text-faint">Answer all <%= questions.length %> questions. Score at least 40% to complete this lesson.</p>
+        <% if (hasSampleQuestions) { %>
+          <div class="alert alert-info">These are topic-based sample questions. They have not yet been checked against the video transcript.</div>
+        <% } %>
+        <% if (quizAttempt) { %>
+          <div class="alert <%= quizAttempt.score * 100 >= quizAttempt.total * 40 ? 'alert-success' : 'alert-info' %>">
+            Previous attempt: <strong><%= quizAttempt.score %>/<%= quizAttempt.total %></strong>
+            (<%= Math.floor(quizAttempt.score * 100 / quizAttempt.total) %>%).
+            <%= quizAttempt.score * 100 >= quizAttempt.total * 40 ? 'You passed this lesson quiz.' : 'Retake the quiz to reach 40%.' %>
+          </div>
+        <% } %>
+      <% } %>
+
+      <% if (questions.length === 0) { %>
+        <div class="empty-state card"><h3>No questions yet</h3><p>The instructor hasn't added questions to this quiz.</p></div>
+      <% } else { %>
+        <form method="POST" action="/student/quizzes/<%= quiz.id %>/submit" class="card card-pad">
+          <%- include('../partials/csrf-field') %>
+          <% questions.forEach((q, i) => { %>
+            <div class="quiz-question">
+              <strong><%= i + 1 %>. <%= q.question %></strong>
+              <div class="quiz-options">
+                <label class="quiz-option"><input type="radio" name="q_<%= q.id %>" value="a" required><%= q.option_a %></label>
+                <label class="quiz-option"><input type="radio" name="q_<%= q.id %>" value="b"><%= q.option_b %></label>
+                <label class="quiz-option"><input type="radio" name="q_<%= q.id %>" value="c"><%= q.option_c %></label>
+                <label class="quiz-option"><input type="radio" name="q_<%= q.id %>" value="d"><%= q.option_d %></label>
+              </div>
+            </div>
+          <% }) %>
+          <button type="submit" class="btn btn-primary" style="margin-top:20px;">Submit answers</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

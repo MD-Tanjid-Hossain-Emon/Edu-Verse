@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="card card-pad">
+        <h2>Welcome back</h2>
+        <p class="text-muted" style="margin-bottom:22px;">Log in to continue your learning journey.</p>
+
+        <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+        <form method="POST" action="/login">
+          <%- include('../partials/csrf-field') %>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" required value="<%= old.email || '' %>" autofocus>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </form>
+
+        <p style="margin-top:20px;text-align:center;font-size:0.88rem;">
+          Don't have an account? <a href="/register" style="color:var(--gold);font-weight:600;">Create one</a>
+        </p>
+
+        <div class="card card-pad" style="margin-top:20px;background:var(--bg-elevated);">
+          <div class="text-faint" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Demo accounts</div>
+          <div class="mono" style="font-size:0.78rem;line-height:1.9;color:var(--text-muted);">
+            admin@eduverse.dev / Admin@123<br>
+            instructor@eduverse.dev / Teach@123<br>
+            student@eduverse.dev / Learn@123
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<div class="dash-sidebar">
+  <div class="card card-pad" style="margin-bottom:16px;">
+    <div class="text-faint" style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;">Administrator</div>
+    <div style="font-weight:600;margin-top:4px;"><%= currentUser.name %></div>
+  </div>
+  <nav>
+    <a href="/admin/dashboard" class="dash-nav-link <%= currentPath === '/admin/dashboard' ? 'active' : '' %>">Overview</a>
+    <a href="/admin/users" class="dash-nav-link <%= currentPath === '/admin/users' ? 'active' : '' %>">Users</a>
+    <a href="/admin/courses" class="dash-nav-link <%= currentPath === '/admin/courses' ? 'active' : '' %>">Courses</a>
+  </nav>
+</div>

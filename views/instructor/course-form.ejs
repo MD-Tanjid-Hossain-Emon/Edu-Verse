@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/instructor-sidebar') %>
+
+    <div class="dash-main" style="max-width:640px;">
+      <h1 style="font-size:1.6rem;"><%= course ? 'Edit course' : 'Create a new course' %></h1>
+      <p class="text-muted">Fill in the basics — you can add lessons, a quiz, and assignments after saving.</p>
+
+      <% if (error) { %><div class="alert alert-error"><%= error %></div><% } %>
+
+      <form method="POST" action="<%= course ? `/instructor/courses/${course.id}/edit` : '/instructor/courses' %>" class="card card-pad">
+        <%- include('../partials/csrf-field') %>
+        <div class="field">
+          <label for="title">Course title</label>
+          <input type="text" id="title" name="title" required value="<%= course ? course.title : '' %>">
+        </div>
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" name="description"><%= course ? course.description : '' %></textarea>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" placeholder="e.g. Web Development" value="<%= course ? course.category : '' %>">
+          </div>
+          <div class="field">
+            <label for="level">Level</label>
+            <select id="level" name="level">
+              <% ['Beginner','Intermediate','Advanced'].forEach(l => { %>
+                <option value="<%= l %>" <%= course && course.level === l ? 'selected' : '' %>><%= l %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cover_color">Cover color</label>
+          <input type="color" id="cover_color" name="cover_color" value="<%= course ? course.cover_color : '#3D5AFE' %>">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block"><%= course ? 'Save changes' : 'Create course' %></button>
+      </form>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

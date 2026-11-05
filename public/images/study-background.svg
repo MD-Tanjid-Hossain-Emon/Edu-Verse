@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" fill="none">
+  <defs>
+    <linearGradient id="gold-line" x1="370" y1="170" x2="1310" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D2AC6D" stop-opacity="0"/>
+      <stop offset=".48" stop-color="#D2AC6D" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#D2AC6D" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="blue-line" x1="260" y1="720" x2="1330" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7186D8" stop-opacity="0"/>
+      <stop offset=".56" stop-color="#7186D8" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#7186D8" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="soft-light" cx="0" cy="0" r="1" gradientTransform="matrix(0 360 -520 0 1000 390)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6877C9" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#6877C9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="1000" cy="390" rx="520" ry="360" fill="url(#soft-light)"/>
+  <g stroke="url(#gold-line)" stroke-width="1.4">
+    <path d="M-120 734C164 436 430 280 704 288c284 8 486 207 856 13"/>
+    <path d="M-150 783C152 473 417 324 691 331c294 7 514 196 891 8"/>
+    <path d="M-169 827C133 511 400 365 679 374c302 9 530 188 911 9"/>
+    <path d="M-179 869C112 551 382 407 665 416c314 10 547 180 923 14"/>
+    <path d="M-171 912C87 591 356 450 648 460c321 11 559 174 936 20"/>
+  </g>
+  <g stroke="url(#blue-line)" stroke-width="1.2">
+    <path d="M498-78C683 111 788 257 827 409c42 166 4 315-70 571"/>
+    <path d="M550-97C729 98 839 246 878 401c41 163 11 328-59 580"/>
+    <path d="M604-112C778 84 891 235 931 393c40 161 18 338-48 580"/>
+    <path d="M658-119C828 73 946 228 985 387c40 162 25 348-36 581"/>
+    <path d="M712-121C881 67 1000 222 1039 382c40 164 32 355-22 582"/>
+  </g>
+  <g stroke="#D2AC6D" stroke-opacity=".16">
+    <circle cx="1052" cy="382" r="258"/>
+    <circle cx="1052" cy="382" r="310"/>
+    <circle cx="1052" cy="382" r="365"/>
+    <path d="M1052 0v900M598 382h842"/>
+  </g>
+  <g fill="#D9B978">
+    <circle cx="1052" cy="124" r="2.5" fill-opacity=".52"/>
+    <circle cx="1310" cy="382" r="2.5" fill-opacity=".42"/>
+    <circle cx="844" cy="687" r="2" fill-opacity=".36"/>
+  </g>
+  <g fill="#8191DC">
+    <circle cx="827" cy="409" r="2.5" fill-opacity=".42"/>
+    <circle cx="985" cy="387" r="2" fill-opacity=".32"/>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+node_modules/
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/backups/
+uploads/assignments/*
+!uploads/assignments/.gitkeep
+uploads/lessons/*
+!uploads/lessons/.gitkeep
+npm-debug.log*
+.DS_Store

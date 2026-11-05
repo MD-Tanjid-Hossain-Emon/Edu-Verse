@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head') %></head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <main class="container section" style="max-width:760px;">
+    <div class="card card-pad">
+      <span class="badge badge-gold mb-24">Account settings</span>
+      <h1>Manage your profile</h1>
+      <p class="text-muted">Update your name, email, or password. Your role is <strong><%= user.role %></strong>.</p>
+
+      <% if (error) { %><div class="alert alert-error" role="alert"><%= error %></div><% } %>
+      <% if (success) { %><div class="alert alert-success" role="status"><%= success %></div><% } %>
+
+      <form method="POST" action="/account">
+        <%- include('partials/csrf-field') %>
+        <h2 class="form-section-title">Profile details</h2>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" maxlength="100" required value="<%= user.name %>">
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" maxlength="254" required value="<%= user.email %>">
+        </div>
+
+        <h2 class="form-section-title" style="margin-top:32px;">Change password</h2>
+        <p class="text-faint">Leave these fields blank if you do not want to change your password.</p>
+        <div class="field">
+          <label for="current_password">Current password</label>
+          <input id="current_password" name="current_password" type="password" autocomplete="current-password">
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="new_password">New password</label>
+            <input id="new_password" name="new_password" type="password" minlength="10" autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label for="confirm_password">Confirm new password</label>
+            <input id="confirm_password" name="confirm_password" type="password" minlength="10" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          <a href="/<%= user.role %>/dashboard" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

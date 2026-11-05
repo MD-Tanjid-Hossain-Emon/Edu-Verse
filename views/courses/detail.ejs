@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container" style="padding-top:40px;padding-bottom:80px;">
+    <div class="grid" style="grid-template-columns: 2fr 1fr; align-items:start;">
+      <div>
+        <span class="badge badge-gold mb-24" style="display:inline-flex;"><%= course.category %></span>
+        <h1 style="margin-top:14px;"><%= course.title %></h1>
+        <p class="text-muted"><%= course.description %></p>
+
+        <div class="card card-pad" style="margin-top:28px;">
+          <h3 style="margin-bottom:14px;">Course content</h3>
+          <% if (lessons.length === 0) { %>
+            <p class="text-faint">The instructor hasn't added lessons yet.</p>
+          <% } else { %>
+            <% lessons.forEach((l, i) => { %>
+              <div class="lesson-row">
+                <div class="lesson-check mono"><%= i + 1 %></div>
+                <div><%= l.title %></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="stat-num mono" style="color:var(--gold);"><%= course.level %></div>
+        <div class="text-faint" style="margin-bottom:18px;">Difficulty level</div>
+
+        <div class="flex gap-8" style="flex-direction:column;">
+          <div class="flex justify-between"><span class="text-muted">Instructor</span><span><%= course.instructor_name %></span></div>
+          <div class="flex justify-between"><span class="text-muted">Lessons</span><span><%= lessons.length %></span></div>
+        </div>
+
+        <% if (!currentUser) { %>
+          <a href="/login" class="btn btn-primary btn-block" style="margin-top:22px;">Log in to enroll</a>
+        <% } else if (currentUser.role !== 'student') { %>
+          <div class="alert alert-info" style="margin-top:22px;">Only student accounts can enroll in courses.</div>
+        <% } else if (isEnrolled) { %>
+          <a href="/student/courses/<%= course.id %>" class="btn btn-primary btn-block" style="margin-top:22px;">Continue learning</a>
+        <% } else { %>
+          <form method="POST" action="/student/courses/<%= course.id %>/enroll" style="margin-top:22px;">
+            <%- include('../partials/csrf-field') %>
+            <button type="submit" class="btn btn-primary btn-block">Enroll now — free</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

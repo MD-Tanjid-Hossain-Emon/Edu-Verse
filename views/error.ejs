@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head') %></head>
+<body>
+  <%- include('partials/navbar') %>
+  <div class="container">
+    <div class="empty-state" style="max-width:520px;margin:60px auto;">
+      <div style="font-family:var(--font-display);font-size:3rem;color:var(--gold);">!</div>
+      <h3><%= title %></h3>
+      <p><%= message %></p>
+      <a href="/" class="btn btn-primary" style="margin-top:8px;">Back to home</a>
+    </div>
+  </div>
+  <%- include('partials/footer') %>
+</body>
+</html>

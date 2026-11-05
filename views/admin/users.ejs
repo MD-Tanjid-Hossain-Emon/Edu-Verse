@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/admin-sidebar') %>
+
+    <div class="dash-main">
+      <h1 style="font-size:1.7rem;">Manage users</h1>
+      <p class="text-muted">Suspend or remove accounts that violate platform policy.</p>
+
+      <div class="flex gap-8 mb-24">
+        <a href="/admin/users" class="btn <%= roleFilter === '' ? 'btn-primary' : 'btn-secondary' %> btn-sm">All</a>
+        <a href="/admin/users?role=student" class="btn <%= roleFilter === 'student' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Students</a>
+        <a href="/admin/users?role=instructor" class="btn <%= roleFilter === 'instructor' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Instructors</a>
+        <a href="/admin/users?role=admin" class="btn <%= roleFilter === 'admin' ? 'btn-primary' : 'btn-secondary' %> btn-sm">Admins</a>
+      </div>
+
+      <div class="card card-pad">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+          <tbody>
+            <% users.forEach(u => { %>
+              <tr>
+                <td><%= u.name %></td>
+                <td class="mono" style="font-size:0.82rem;"><%= u.email %></td>
+                <td><span class="badge badge-muted"><%= u.role %></span></td>
+                <td><span class="badge <%= u.status === 'active' ? 'badge-teal' : 'badge-coral' %>"><%= u.status %></span></td>
+                <td class="text-faint"><%= u.created_at %></td>
+                <td>
+                  <div class="flex gap-8">
+                    <% if (u.id !== currentUser.id) { %>
+                      <form method="POST" action="/admin/users/<%= u.id %>/suspend">
+                        <%- include('../partials/csrf-field') %>
+                        <button class="btn btn-secondary btn-sm"><%= u.status === 'active' ? 'Suspend' : 'Reactivate' %></button>
+                      </form>
+                      <form method="POST" action="/admin/users/<%= u.id %>/delete" onsubmit="return confirm('Delete this user permanently?');">
+                        <%- include('../partials/csrf-field') %>
+                        <button class="btn btn-danger btn-sm">Delete</button>
+                      </form>
+                    <% } else { %>
+                      <span class="text-faint" style="font-size:0.8rem;">You</span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "eduverse",
+  "version": "1.0.0",
+  "description": "EduVerse - A universe of learning opportunities. A full-stack Learning Management System (LMS).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js",
+    "migrate:sqlite-to-mysql": "node db/migrate-sqlite-to-mysql.js",
+    "seed:sample-lesson-quizzes": "node db/seed-sample-lesson-quizzes.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "connect-sqlite3": "^0.9.13",
+    "dayjs": "^1.11.13",
+    "ejs": "^7.0.2",
+    "express": "^4.22.3",
+    "express-session": "^1.18.0",
+    "mysql2": "^3.24.6",
+    "multer": "^2.2.0",
+    "pdfkit": "^0.15.0"
+  },
+  "overrides": {
+    "qs": "^6.16.2",
+    "connect-sqlite3": {
+      "sqlite3": "^6.0.1"
+    }
+  }
+}

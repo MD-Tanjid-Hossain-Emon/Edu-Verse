@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="dash-shell">
+    <%- include('../partials/admin-sidebar') %>
+
+    <div class="dash-main">
+      <h1 style="font-size:1.7rem;">Platform overview</h1>
+      <p class="text-muted">Monitor users, courses, and activity across EduVerse.</p>
+      <a href="/admin/reports.csv" class="btn btn-secondary btn-sm" style="margin-bottom:20px;">Download platform report (CSV)</a>
+
+      <div class="stat-grid">
+        <div class="card stat-card"><div class="stat-num mono"><%= stats.users %></div><div class="stat-label">Total users</div></div>
+        <div class="card stat-card"><div class="stat-num mono" style="color:var(--teal);"><%= stats.students %></div><div class="stat-label">Students</div></div>
+        <div class="card stat-card"><div class="stat-num mono" style="color:var(--indigo);"><%= stats.instructors %></div><div class="stat-label">Instructors</div></div>
+        <div class="card stat-card"><div class="stat-num mono" style="color:var(--gold);"><%= stats.pending %></div><div class="stat-label">Courses pending review</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= stats.published %></div><div class="stat-label">Published courses</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= stats.enrollments %></div><div class="stat-label">Total enrollments</div></div>
+        <div class="card stat-card"><div class="stat-num mono"><%= stats.certificates %></div><div class="stat-label">Certificates issued</div></div>
+      </div>
+
+      <div class="card card-pad mb-24">
+        <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
+          <div>
+            <h3 style="margin-bottom:4px;">Application runtime</h3>
+            <p class="text-faint" style="margin:0;">Live process diagnostics; uptime is per running server process.</p>
+          </div>
+          <div class="flex gap-12" style="flex-wrap:wrap;">
+            <span class="badge badge-teal"><%= runtime.uptimeMinutes %> min uptime</span>
+            <span class="badge badge-indigo"><%= runtime.heapUsedMb %>/<%= runtime.heapTotalMb %> MB heap</span>
+            <span class="badge badge-muted"><%= runtime.nodeVersion %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card card-pad">
+          <div class="flex justify-between items-center mb-24">
+            <h3 style="margin:0;">Courses awaiting approval</h3>
+            <a href="/admin/courses?status=pending" class="btn btn-ghost btn-sm">View all</a>
+          </div>
+          <% if (pendingCourses.length === 0) { %>
+            <p class="text-faint">Nothing pending review.</p>
+          <% } else { %>
+            <% pendingCourses.forEach(c => { %>
+              <div class="lesson-row">
+                <div style="flex:1;">
+                  <div style="font-weight:600;"><%= c.title %></div>
+                  <div class="text-faint" style="font-size:0.8rem;">by <%= c.instructor_name %></div>
+                </div>
+                <form method="POST" action="/admin/courses/<%= c.id %>/approve"><%- include('../partials/csrf-field') %><button class="btn btn-primary btn-sm">Approve</button></form>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <div class="card card-pad">
+          <div class="flex justify-between items-center mb-24">
+            <h3 style="margin:0;">Newest users</h3>
+            <a href="/admin/users" class="btn btn-ghost btn-sm">View all</a>
+          </div>
+          <% recentUsers.forEach(u => { %>
+            <div class="lesson-row">
+              <div style="flex:1;">
+                <div style="font-weight:600;"><%= u.name %></div>
+                <div class="text-faint" style="font-size:0.8rem;"><%= u.email %></div>
+              </div>
+              <span class="badge badge-muted"><%= u.role %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
